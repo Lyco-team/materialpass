@@ -1,6 +1,15 @@
 {
   "protocol": "lilyco-native-web/1",
   "name": "材料通 MaterialPass",
+  "short_name": "材料通",
+  "description": "政务与日常材料的保管、规格处理与人工复核闸门；纯前端，文件不上传。",
+  "lang": "zh-CN",
+  "dir": "ltr",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#3f51d1",
+  "icons": [{ "src": "/icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }],
   "version": "0.1.0",
   "repo": "https://github.com/lilyco-42/materialpass",
   "surface": {
