@@ -167,7 +167,7 @@ export default function ReviewPage() {
               onClick={() => {
                 const json = exportVaultInteropJson();
                 download(new Blob([json], { type: "application/json" }), "materialpass-vault.json");
-                toast.success("互通资料库已导出", { description: "字段与 lilyco-web2cli 的 VaultProfile 逐字段一致，可直接 lweb2cli vault import --json。" });
+                toast.success("互通资料库已导出", { description: "字段与 lilyco-web2cli 的 VaultProfile 逐字段一致，可直接 lweb2cli vault --op import --profile <名> --file <json>。" });
               }}
             >
               <FileJson aria-hidden className="size-4" />

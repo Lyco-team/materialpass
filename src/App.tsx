@@ -125,7 +125,7 @@ export default function App() {
       </div>
 
       <footer className="text-muted-foreground mx-auto max-w-7xl px-4 pb-10 text-xs lg:px-6">
-        材料通 MaterialPass · 纯前端，零遥测 · 数据格式与 lilyco-web2cli 逐字段对齐
+        材料通 MaterialPass · 纯前端，零遥测 · 资料库格式与 lilyco-web2cli 互通
       </footer>
     </div>
   );

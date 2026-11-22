@@ -283,7 +283,7 @@ export function exportDraft(id: string) {
   return JSON.stringify({ ...d, attachments: files, exported_unix: Math.floor(Date.now() / 1000) }, null, 2);
 }
 
-/** lweb2cli 互通格式：导出后可直接 lweb2cli vault import --json - */
+/** lweb2cli 互通格式：导出后可直接 lweb2cli vault --op import --profile <名> --file <json> */
 export function exportVaultInteropJson() {
   syncAttachments();
   return JSON.stringify(state.profile, null, 2);

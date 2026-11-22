@@ -70,7 +70,7 @@
     "settings.vault.<export|import|password>": "保管箱加密备份"
   },
   "interop": {
-    "lilyco-web2cli": "export_vault_lweb2cli 的输出与 lweb2cli 的 VaultProfile 逐字段一致，可直接 lweb2cli vault import --json；草稿结构与 SubmissionDraft 对齐（status: pending_review|approved|rejected|submitted）",
+    "lilyco-web2cli": "export_vault_lweb2cli 的输出与 lweb2cli 的 VaultProfile 逐字段一致，可直接 lweb2cli vault --op import --profile <名> --file <json>；网页草稿与 SubmissionDraft 对齐字段命名与 status 取值（pending_review|approved|rejected|submitted），带 command 的填报草稿由 lweb2cli prepare-submit 生成",
     "reason": "网页负责人类看得懂、AI 改得动；真正跨站点填报由 lweb2cli 的 CDP + wizard + HumanReviewGate 执行，两边不重复造轮子"
   }
 }

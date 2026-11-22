@@ -18,7 +18,7 @@
 
 - 不做"AI 帮你自动提交"。**提交必须由人类签字**——`approve` 这个动作要求显式带 `byHuman: true`，AI 无法自己批自己的材料。
 - 做**预审**而不是代填：把"这张照片像素不对""这个证件还有 20 天过期""这三个字段是空的"在人按提交键之前说清楚。
-- 做**互通**而不是重造：跨站点真正填报的引擎在 [`lilyco-web2cli`](https://github.com/lilyco-42/lilyco) 里已经有了（vault 资料库、CDP 附着已登录浏览器、wizard 向导、HumanReviewGate）。材料通负责让人看得懂、改得动，导出的 JSON 与 `VaultProfile` / `SubmissionDraft` 逐字段一致，交给它零转换。
+- 做**互通**而不是重造：跨站点真正填报的引擎在 [`lilyco-web2cli`](https://github.com/lilyco-42/lilyco) 里已经有了（vault 资料库、CDP 附着已登录浏览器、wizard 向导、HumanReviewGate）。材料通负责让人看得懂、改得动，导出的资料库 JSON 与 `VaultProfile` 逐字段一致，已由真实 `lweb2cli vault --op import` 导入验证；草稿对齐字段命名与 `status` 取值，CLI 侧带 `command` 的填报草稿由 `prepare-submit` 生成。
 
 ## 怎么用（5 步，评委照着就能跑通）
 
@@ -72,7 +72,7 @@ pnpm build     # 类型检查 + 生产构建 → dist/
 
 ```
 src/lib/
-  types.ts   VaultProfile / SubmissionDraft —— 与 lilyco-web2cli 逐字段对齐
+  types.ts   VaultProfile 与 lilyco-web2cli 逐字段一致；SubmissionDraft 对齐字段命名与 status
   specs.ts   政务材料规格库 + 确定性规则引擎
   imaging.ts 旋转/裁剪/缩放/压缩/转格式（Canvas）
   crypto.ts  保管箱加密备份（PBKDF2 + AES-GCM）
@@ -80,6 +80,19 @@ src/lib/
   native.ts  lilyco-native-web/1 协议桥
   ai.ts      AI 语义预审（可选，失败自动回退规则）
 ```
+
+## 与 lilyco-web2cli 互通（实测）
+
+网页「导出 lweb2cli 互通资料库」产出的 JSON，直接喂给真实 CLI：
+
+```bash
+lweb2cli vault --op import --profile materialpass --file materialpass-vault.json
+# {"imported":true,"profile":"materialpass","categories":["company","contact","finance","legal_rep","personal"],"attachments_count":2}
+```
+
+跨站点填报那一头由 CLI 承担：`prepare-submit --source <url> --profile <名>` 生成带 `command` 的
+待审草稿 → `review --op approve` 人工签字 → `commit-submit --id <draft>` 受控发包。
+网页草稿对齐的是字段命名与 `status` 取值，它记录的是"人签过字"这件事，本身不带目标站点命令规格。
 
 ## 截图
 
@@ -104,7 +117,7 @@ src/lib/
 ## Qoder 开发过程
 
 **交给 Qoder 的**：需求预研（含"大赛真正要求的是 Qoder Sites 公开链接 + 天池作品帖，而不是 GitHub"这一纠正、
-以及发现 `lilyco-web2cli` 已实现填报引擎、于是改为数据格式逐字段互通而不是重写）；技术栈对齐官方
+以及发现 `lilyco-web2cli` 已实现填报引擎、于是改为资料库格式逐字段互通而不是重写）；技术栈对齐官方
 `lilyco-template/web`；`src/lib/` 数据层与 `lilyco-native-web/1` 协议桥；六个页面的 UI；
 用本机 ego-lite 浏览器跑完整端到端流程并截图。
 

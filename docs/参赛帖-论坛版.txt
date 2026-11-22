@@ -86,8 +86,9 @@ PBKDF2 + AES-GCM 加密，密码不离开本机。零遥测、零第三方请求
   ——真正的缺口在部署这一步；
 · 更关键的是它发现这个想法我们自己已经实现过一半：lilyco-web2cli 里已经有政务填表闭环（资料库分类、
   Cookie 导入、AI 预填草稿、人类审核闸门、受控提交、CDP 附着已登录浏览器）。于是方案从「重写一个引擎」
-  改成「做它的 Web 前端 + 客户端材料处理」，数据格式与 VaultProfile / SubmissionDraft 逐字段对齐，
-  导出的 JSON 能被 CLI 零转换吃下。这一步至少省掉一周的重复劳动。
+  改成「做它的 Web 前端 + 客户端材料处理」：资料库导出与 Rust 侧 VaultProfile 逐字段一致（这一步后来
+  用真实 CLI 跑通验证过），草稿侧对齐字段命名与 status 取值，跨站点真正发包那条链由 CLI 的
+  prepare-submit 生成带 command 的草稿。这一步至少省掉一周的重复劳动。
 
 2）技术栈对齐
 Qoder 读取 lilyco 官方 lilyco-template/web 底座（React 19 + Vite 6 + Tailwind v4 + shadcn oklch 令牌），
@@ -113,8 +114,9 @@ Qoder 用本机 ego-lite 浏览器（人机共用浏览器，Agent 操作时界�
 · 390px 手机视口下六个页面是否横向溢出 → 每页 scrollWidth 都等于 390，表格/代码块在自己盒子里滚动
 · 触屏下的点击目标尺寸 → (pointer: coarse) 时按钮与输入控件 ≥44px，鼠标设备仍是紧凑尺寸
 · 生产构建启动是否有控制台/网络报错 → 零报错零警告，零第三方请求
+· 网页导出的资料库能否被真实 lweb2cli 二进制导入 → vault --op import 返回 imported:true，5 个分类、2 份附件全部落库
 
-5）发现并修掉四个真实缺陷（都是边跑边查出来的，不是我们提的）
+5）发现并修掉五个真实缺陷（都是边跑边查出来的，不是我们提的）
 · app.tab.vault 匹配到 2 个元素：响应式布局里侧边导航和窄屏导航共用了同一路径，Agent 定位会失败。
   Qoder 把窄屏导航改成独立命名空间 app.tabbar.*，并且加了一个自检动作 ambiguous()，
   让页面自己报告歧义地址——现在返回 {}。
@@ -127,6 +129,11 @@ Qoder 用本机 ego-lite 浏览器（人机共用浏览器，Agent 操作时界�
   给卡片与示例块加 min-w-0、让代码块在自己的盒子里滚动后，六个页面 scrollWidth 全部回到 390；
   同时补了一条 @media (pointer: coarse) 规则，触屏下点击目标 ≥44px。这条是受众决定的：
   长辈多半是用手机单手点的。
+· 文档里的互通命令是错的：README 和 manifest.json 都写着 lweb2cli vault import --json …，看着很像回事；
+  真把网页导出的 JSON 交给二进制时才发现这个子命令不存在——--json 只是输出格式开关，导入是
+  vault --op import --profile <名> --file <json>。顺手核对 Rust 源码又发现 SubmissionDraft 有个必填的
+  command（WebCommandSpec），所以「草稿也逐字段对齐」属于过度宣称。两处都按 --help 和源码改过，
+  导入也真跑通了。互通这件事，跑一遍才算数。
 
 6）我们人工改 / 决定的部分
 · 产品主张本身：「不做自动提交、AI 只能预审、人类必须签字」这条来自我们在窗口边的观察，
@@ -145,6 +152,6 @@ Qoder 用本机 ego-lite 浏览器（人机共用浏览器，Agent 操作时界�
 · 单一状态源：所有状态在 src/lib/store.ts，UI 通过 useSyncExternalStore 订阅，不留平行状态。
 · lilyco-native-web/1 协议：window.__materialpass.invoke(action, params)，14 个动作，
   机器可读契约在 /manifest.json。
-· 与 lilyco-web2cli 互通：lweb2cli vault import --json → prepare-submit → review --op approve →
+· 与 lilyco-web2cli 互通：lweb2cli vault --op import --profile <名> --file <json> → prepare-submit → review --op approve →
   commit-submit。网页负责人类看得懂改得动，CLI 负责跨站点真填报。
 · 许可 MIT，属于 lilyco 生态：<https://github.com/lilyco-42/lilyco>

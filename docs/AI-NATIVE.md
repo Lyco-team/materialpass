@@ -35,14 +35,18 @@ review.draft.<id>.approve          某份草稿的人工批准闸门
 | 提交 | 永不提交，只导出提交包 | `commit-submit` 受控发包 + 回执 |
 | 闸门 | `byHuman: true` 的 approve | `HumanReviewGate` 截图暂停 |
 
-数据格式逐字段对齐（`VaultProfile`：`name / categories<category<key,value>> / attachments<key,{category,label,path,mime_hint}>`；`SubmissionDraft`：`status ∈ pending_review|approved|rejected|submitted`）。所以：
+资料库格式（`VaultProfile`：`name / categories<category<key,value>> / attachments<key,{category,label,path,mime_hint}>`）与 Rust 侧逐字段一致，这条已用真实 `vault --op import` 跑通验证过。草稿侧对齐的是字段命名和 `status ∈ pending_review|approved|rejected|submitted`；CLI 真正发包用的草稿由 `prepare-submit` 生成，它比网页草稿多一个必填的 `command`（`WebCommandSpec`，即"往哪个站点提交什么"），网页这份是给人签字的那条记录。所以：
 
 ```bash
 # 网页「导出 lweb2cli 互通资料库」→ 交给 CLI 复放到真实政务站点
-lweb2cli vault import --json materialpass-vault.json
+lweb2cli vault --op import --profile materialpass --file materialpass-vault.json
 lweb2cli prepare-submit --source https://… --profile 张阿姨 --session gov
 lweb2cli review --op show --id <draft_id>
 lweb2cli commit-submit --id <draft_id>
 ```
 
 这条链是作品的实际价值：网页让人敢用，CLI 让机器能跑，两边都不重复造轮子。
+
+实测记录（2026-11-22，本机 debug 构建）：网页「导出 lweb2cli 互通资料库」得到的 JSON，
+交给 `lweb2cli vault --op import --profile materialpass --file materialpass-vault.json`，
+返回 `{"imported":true,"profile":"materialpass","categories":["company","contact","finance","legal_rep","personal"],"attachments_count":2}`。

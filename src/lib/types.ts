@@ -1,4 +1,4 @@
-/** 与 lilyco-web2cli 的 VaultProfile / SubmissionDraft 逐字段对齐，导出的 JSON 可被 lweb2cli 直接吃下。 */
+/** VaultProfile 与 lilyco-web2cli 的 Rust 结构逐字段一致（已实测导入）；SubmissionDraft 对齐字段命名与 status 取值，CLI 侧带 command 的填报草稿由 prepare-submit 生成。 */
 
 export type AttachmentEntry = {
   category: string;
