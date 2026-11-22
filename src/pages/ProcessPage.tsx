@@ -12,7 +12,7 @@ import { mimeShort } from "@/components/labels";
 import { navigate } from "@/hooks/useRoute";
 import { useStore } from "@/hooks/useStore";
 import type { Transform } from "@/lib/imaging";
-import { fmt, specById } from "@/lib/specs";
+import { fmt, specById, specTransform } from "@/lib/specs";
 import { alignToSpec, getMaterialBlob, processMaterial } from "@/lib/store";
 import { cn } from "@/lib/utils";
 import type { StoredMaterial } from "@/lib/types";
@@ -166,18 +166,20 @@ export default function ProcessPage({ selectedKey }: { selectedKey: string | nul
       return;
     }
     const spec = specById(material.specId);
+    // 预览默认就按规格给的目标比例/尺寸来，否则「处理后」看起来和「处理前」一样，而一键对齐实际会改
+    const want = spec ? specTransform(material, spec) : null;
     setP({
       rotate: 0,
-      useCrop: false,
-      cropX: "0",
-      cropY: "0",
-      cropW: String(material.width ?? 0),
-      cropH: String(material.height ?? 0),
-      outW: "",
-      outH: "",
+      useCrop: !!want?.crop,
+      cropX: String(want?.crop?.x ?? 0),
+      cropY: String(want?.crop?.y ?? 0),
+      cropW: String(want?.crop?.w ?? material.width ?? 0),
+      cropH: String(want?.crop?.h ?? material.height ?? 0),
+      outW: want?.width ? String(want.width) : "",
+      outH: want?.height ? String(want.height) : "",
       aspectLock: true,
       maxKb: spec?.maxBytes ? Math.floor(spec.maxBytes / 1024) : 0,
-      mime: mimeOf(material.mime),
+      mime: want?.mime ?? mimeOf(material.mime),
       whiteBg: false,
     });
     setError(null);

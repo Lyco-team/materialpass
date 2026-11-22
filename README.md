@@ -83,16 +83,41 @@ src/lib/
 
 ## 截图
 
-<!-- 待补：部署完成后用真实页面截图替换，比赛要求"尽量多包含截图凭证" -->
-- 资料库与材料清单
-- 图像工作台（处理前后对比 + 操作日志）
-- 预审问题清单
-- 人工复核闸门（二次确认弹窗）
-- Agent 通道（语义路径 + 控制台执行结果）
+以下均为生产构建（`pnpm build` 后的 `dist`）在无头 Chromium 里的实机截图，1440×900。
+**画面里的姓名、证件号、材料都是脚本生成的虚构示例数据**，不是任何真实个人信息。
+
+| 上手五步 | 资料库 | 材料处理（前 → 后） |
+| --- | --- | --- |
+| ![guide](docs/screenshots/01-guide.png) | ![vault](docs/screenshots/02-vault.png) | ![process](docs/screenshots/03-process.png) |
+
+| 预审结果 | 人工签字闸门 | 签字后放行导出 |
+| --- | --- | --- |
+| ![review](docs/screenshots/04-review.png) | ![sign](docs/screenshots/05-sign.png) | ![approved](docs/screenshots/06-review-approved.png) |
+
+| Agent 通道 | 设置 |
+| --- | --- |
+| ![agent](docs/screenshots/07-agent.png) | ![settings](docs/screenshots/08-settings.png) |
+
+处理前后那一组是真实结果：600×900 的 PNG 原图，按「一寸证件照」规格居中裁切后缩放到 295×413、
+转 JPEG、70 KB → 9 KB；「一键对齐」与页面右侧的实时预览共用同一份 `specTransform()`，所以预览即结果。
 
 ## Qoder 开发过程
 
-<!-- 待补：按大赛要求如实记录哪几步交给 Qoder、人工改了什么，附过程截图 -->
+**交给 Qoder 的**：需求预研（含"大赛真正要求的是 Qoder Sites 公开链接 + 天池作品帖，而不是 GitHub"这一纠正、
+以及发现 `lilyco-web2cli` 已实现填报引擎、于是改为数据格式逐字段互通而不是重写）；技术栈对齐官方
+`lilyco-template/web`；`src/lib/` 数据层与 `lilyco-native-web/1` 协议桥；六个页面的 UI；
+用本机 ego-lite 浏览器跑完整端到端流程并截图。
+
+**Qoder 自己发现并修掉的缺陷**（都是实跑出来的，不是事先想到的）：
+
+1. `app.tab.vault` 命中 2 个元素——响应式侧栏与窄屏导航共用了同一路径，Agent 会定位失败。
+   改为窄屏独立命名空间 `app.tabbar.*`，并新增 `ambiguous()` 自检动作，让页面自己报告歧义地址。
+2. 缩放日志把「从 → 到」打成同样的数值（先赋值再拼字符串）。
+3. 材料处理页的「处理后（实时预览）」没有带上目标规格的像素尺寸，导致预览显示 600×900 而
+   一键对齐实际产出 295×413——预览与结果不一致。抽出 `specTransform()` 供 store 与页面共用后修复。
+
+**人工决定的**：不做"AI 自动提交"这条产品红线（`approve` 硬要求 `byHuman: true`）；
+规格数值不做官方标准宣称、全部可编辑；赛道选择；无障碍与文案取向；品牌命名。
 
 ## 许可
 

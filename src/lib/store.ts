@@ -1,5 +1,5 @@
 import { blobDel, blobGet, blobSet, kvGet, kvSet } from "./db";
-import { checkMaterial, specById } from "./specs";
+import { checkMaterial, specById, specTransform } from "./specs";
 import { decryptVault, encryptJson } from "./crypto";
 import { process, probe } from "./imaging";
 import type { Transform } from "./imaging";
@@ -207,23 +207,7 @@ export async function alignToSpec(key: string) {
   const m = state.materials.find((x) => x.key === key);
   const spec = specById(m?.specId);
   if (!m || !spec) throw new Error("该材料未设定目标规格");
-  const t: Transform = { mime: spec.mime.includes("image/png") ? "image/png" : "image/jpeg" };
-  if (spec.px) {
-    const err = m.width && m.height ? Math.abs(m.width / m.height - spec.px.w / spec.px.h) / (spec.px.w / spec.px.h) : 1;
-    if (err > (spec.ratioTolerance ?? 0.02)) {
-      // 比例不对 → 以目标比例居中裁切
-      const sw = m.width!;
-      const sh = m.height!;
-      const tr = spec.px.w / spec.px.h;
-      const cw = sh * tr > sw ? sw : sh * tr;
-      const ch = cw / tr;
-      t.crop = { x: Math.round((sw - cw) / 2), y: Math.round((sh - ch) / 2), w: Math.round(cw), h: Math.round(ch) };
-    }
-    t.width = spec.px.w;
-    t.height = spec.px.h;
-  }
-  if (spec.maxBytes) t.maxBytes = spec.maxBytes;
-  return processMaterial(key, t);
+  return processMaterial(key, specTransform(m, spec));
 }
 
 /* ────────────── 草稿与人类复核闸门 ────────────── */

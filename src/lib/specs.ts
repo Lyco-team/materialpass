@@ -1,4 +1,5 @@
 import { KB, MB, type Finding, type MaterialSpec } from "./types";
+import type { Transform } from "./imaging";
 
 /**
  * 常见政务/办事材料要求。数值取自各地高频公示的报名照与证照规格，
@@ -84,6 +85,28 @@ export const SPECS: MaterialSpec[] = [
 
 export function specById(id?: string): MaterialSpec | undefined {
   return id ? SPECS.find((s) => s.id === id) : undefined;
+}
+
+/**
+ * 规格 → 处理参数：比例不符先按目标比例居中裁切，再缩放到目标像素。
+ * 「一键对齐」和处理页的实时预览共用这一份，两边结果必须一致。
+ */
+export function specTransform(m: { mime: string; bytes: number; width?: number; height?: number }, spec: MaterialSpec): Transform {
+  const t: Transform = { mime: spec.mime.includes("image/png") ? "image/png" : "image/jpeg" };
+  if (spec.px) {
+    const err = m.width && m.height ? Math.abs(m.width / m.height - spec.px.w / spec.px.h) / (spec.px.w / spec.px.h) : 1;
+    if (err > (spec.ratioTolerance ?? 0.02) && m.width && m.height) {
+      // 比例不对 → 以目标比例居中裁切
+      const tr = spec.px.w / spec.px.h;
+      const cw = m.height * tr > m.width ? m.width : m.height * tr;
+      const ch = cw / tr;
+      t.crop = { x: Math.round((m.width - cw) / 2), y: Math.round((m.height - ch) / 2), w: Math.round(cw), h: Math.round(ch) };
+    }
+    t.width = spec.px.w;
+    t.height = spec.px.h;
+  }
+  if (spec.maxBytes) t.maxBytes = spec.maxBytes;
+  return t;
 }
 
 export type MaterialLike = {
