@@ -112,6 +112,12 @@
   input[type="radio"] {
     @apply size-5 cursor-pointer accent-primary;
   }
+  /* 触屏设备上手指点击目标至少 44px（受众是长辈）；鼠标设备仍用紧凑尺寸 */
+  @media (pointer: coarse) {
+    :is(button, select, textarea, input:not([type="checkbox"], [type="radio"], [type="range"], [type="file"])) {
+      min-height: 44px;
+    }
+  }
   ::selection {
     background: color-mix(in oklch, var(--brand) 25%, transparent);
   }

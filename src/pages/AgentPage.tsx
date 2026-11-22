@@ -237,7 +237,7 @@ export default function AgentPage() {
             {examples.map((ex) => {
               const text = `await window.__materialpass.invoke("${ex.action}", ${JSON.stringify(ex.params)})`;
               return (
-                <article key={ex.title} className="bg-muted/40 rounded-lg p-3">
+                <article key={ex.title} className="min-w-0 bg-muted/40 rounded-lg p-3">
                   <p className="text-sm font-medium">{ex.title}</p>
                   <p className="text-muted-foreground mt-0.5 text-xs leading-relaxed">{ex.why}</p>
                   <pre className="mt-2 bg-background overflow-auto rounded border border-border p-2.5 font-mono text-xs">{text}</pre>
