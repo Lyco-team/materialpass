@@ -1,0 +1,37 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>材料通 MaterialPass — AI 原生材料提交与保管台</title>
+    <meta
+      name="description"
+      content="把身份证、照片、证明等政务材料集中保管、一键处理成合规规格，AI 预审后由人类签字提交。网页本身可被 AI Agent 直接操作。"
+    />
+    <link rel="manifest" href="/manifest.json" />
+    <script type="application/ld+json" id="agent-contract">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "材料通 MaterialPass",
+        "applicationCategory": "UtilitiesApplication",
+        "operatingSystem": "Web",
+        "description": "政务与日常材料的提交、加密保管、规格处理与 AI 预审工作台。",
+        "sameAs": "https://github.com/lilyco-42/materialpass",
+        "keywords": ["政务材料", "无障碍", "AI原生网页", "lilyco", "材料处理"],
+        "x-agent": {
+          "protocol": "lilyco-native-web/1",
+          "contract": "/manifest.json",
+          "bridge": "window.__materialpass",
+          "invoke": "__materialpass.invoke(action, params) -> Promise<Result>",
+          "selectors": "[data-mp-path] 语义路径，稳定且不受文案影响",
+          "humanGate": "所有提交类动作必须先由人类把 status 置为 approved，页面绝不自动提交"
+        }
+      }
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+  </body>
+</html>

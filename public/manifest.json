@@ -1,0 +1,67 @@
+{
+  "protocol": "lilyco-native-web/1",
+  "name": "材料通 MaterialPass",
+  "version": "0.1.0",
+  "repo": "https://github.com/lilyco-42/materialpass",
+  "surface": {
+    "bridge": "window.__materialpass",
+    "invoke": "await window.__materialpass.invoke(action, params) -> Promise<Result>",
+    "actions": "window.__materialpass.actions",
+    "paths": "window.__materialpass.paths() -> string[]",
+    "domSelector": "[data-mp-path]",
+    "ready": "document 上的 materialpass:ready 事件"
+  },
+  "principles": [
+    "人类与 Agent 共用同一套 action 与同一条校验链，不存在 Agent 专用旁路",
+    "状态只有一份，来自 store；UI 不维护平行状态，Agent 读到的和人类看到的必然一致",
+    "材料是隐私物：处理在本地 Canvas，保存在 IndexedDB，导出必须加密",
+    "提交类动作需要人类签字闸门：approve 必须显式 byHuman:true，AI 不能自批自提"
+  ],
+  "actions": [
+    { "name": "snapshot", "writes": false, "params": {}, "returns": "{ ok, text }，编号文本视图，低 token 成本" },
+    { "name": "precheck", "writes": false, "params": {}, "returns": "{ ok, errors[], warns[], usedAi }" },
+    { "name": "set_field", "writes": true, "params": { "category": "string", "key": "string", "value": "string" } },
+    { "name": "align_spec", "writes": true, "params": { "key": "材料 key" }, "returns": "裁切+缩放+压缩后的结果与操作日志" },
+    { "name": "process", "writes": true, "params": { "key": "材料 key", "transform": "Transform" } },
+    { "name": "set_expiry", "writes": true, "params": { "key": "材料 key", "expiry": "YYYY-MM-DD" } },
+    { "name": "set_spec", "writes": true, "params": { "key": "材料 key", "specId": "spec id" } },
+    { "name": "create_draft", "writes": true, "params": { "base_url?": "string", "session?": "string" } },
+    { "name": "patch_arg", "writes": true, "params": { "id": "draft id", "field": "string", "value": "any" }, "note": "任何修改都会把草稿打回 pending_review" },
+    { "name": "approve", "writes": true, "params": { "id": "draft id", "note": "string", "byHuman": "必须为 true" }, "needsHuman": true },
+    { "name": "reject", "writes": true, "params": { "id": "draft id", "note": "string" } },
+    { "name": "export_draft", "writes": false, "params": { "id": "draft id" }, "note": "仅 approved 草稿可导出" },
+    { "name": "export_vault_lweb2cli", "writes": false, "params": {}, "returns": "lilyco-web2cli VaultProfile JSON" },
+    { "name": "list_specs", "writes": false, "params": {}, "returns": "可用规格清单" }
+  ],
+  "specs": [
+    { "id": "id_card", "label": "身份证正反面（扫描件）", "maxBytes": 2097152, "needsExpiry": true },
+    { "id": "photo_1in", "label": "一寸证件照", "px": "295x413", "maxBytes": 512000 },
+    { "id": "photo_2in", "label": "二寸证件照", "px": "413x579", "maxBytes": 1048576 },
+    { "id": "photo_web", "label": "网页上传小照（≤100KB）", "maxBytes": 102400 },
+    { "id": "license", "label": "营业执照 / 登记证书", "maxBytes": 5242880, "needsExpiry": true },
+    { "id": "bank_proof", "label": "银行流水 / 缴费证明", "maxBytes": 10485760 },
+    { "id": "med_report", "label": "体检报告 / 医疗健康材料", "maxBytes": 5242880, "needsExpiry": true },
+    { "id": "house_contract", "label": "房产证 / 租赁合同", "maxBytes": 10485760 },
+    { "id": "diploma", "label": "学历证书 / 成绩单", "maxBytes": 5242880 }
+  ],
+  "paths": {
+    "guide.step.<1-5>": "上手引导的五个步骤入口",
+    "vault.profile.name": "档案名输入框",
+    "vault.field.<category>.<key>": "档案字段，如 vault.field.personal.name",
+    "vault.materials.add": "材料上传控件",
+    "vault.material.<key>.<label|category|spec|expiry|delete|preview>": "材料行内的可操作元素",
+    "process.material.<key>.<rotate|crop|scale|compress|format|whitebg|apply|align|preview|log>": "图像工作台",
+    "review.precheck": "运行预审",
+    "review.finding.<index>": "问题清单条目，可定位到材料",
+    "review.draft.<id>.arg.<field>": "草稿字段编辑",
+    "review.draft.<id>.<approve|reject|export|status>": "人工复核闸门",
+    "agent.action.<name>": "动作说明行",
+    "agent.invoke": "Agent 控制台执行按钮",
+    "settings.ai.<enabled|base|model|key>": "AI 预审配置",
+    "settings.vault.<export|import|password>": "保管箱加密备份"
+  },
+  "interop": {
+    "lilyco-web2cli": "export_vault_lweb2cli 的输出与 lweb2cli 的 VaultProfile 逐字段一致，可直接 lweb2cli vault import --json；草稿结构与 SubmissionDraft 对齐（status: pending_review|approved|rejected|submitted）",
+    "reason": "网页负责人类看得懂、AI 改得动；真正跨站点填报由 lweb2cli 的 CDP + wizard + HumanReviewGate 执行，两边不重复造轮子"
+  }
+}
