@@ -18,7 +18,7 @@
 ———————————————————————————————
 
 云枢智创数码信息科技服务工作室 · lilyco-42。我们平时用 lilyco（自研 Rust 工具框架）做自己的生产力工具，
-已经开源了几十个仓库，这次的「材料通」是 lilyco 生态里第一个纯 Web 端的作品。
+GitHub 上开源了两百多个仓库，这次的「材料通」是其中第一个作为完整网站上线、对外可以直接访问的作品。
 
 ———————————————————————————————
 二、你的作品是什么
@@ -106,8 +106,9 @@ PBKDF2 + AES-GCM 加密，密码不离开本机。零遥测、零第三方请求
   prepare-submit 生成带 command 的草稿。这一步至少省掉一周的重复劳动。
 
 2）技术栈对齐
-Qoder 读取 lilyco 官方 lilyco-template/web 底座（React 19 + Vite 6 + Tailwind v4 + shadcn oklch 令牌），
-直接复用，没有手搓 CSS 导致风格飘移。依赖安装 911ms 完成。
+直接落在现成的 React 19 + Vite 6 + Tailwind v4 + shadcn oklch 令牌底座上，复用八份现成 UI 原语
+（@/components/ui），没有手搓 CSS 导致风格飘移；lilyco 这边贡献的是 src/lib/ 分层约定和协议桥，
+不是另一套前端框架。依赖安装 911ms 完成。
 
 3）代码实现
 src/lib/ 数据层（类型 / 规格库与规则引擎 / Canvas 图像处理 / WebCrypto 加密保管箱 / 单一状态源 store /
@@ -143,6 +144,8 @@ Qoder 用本机 ego-lite 浏览器（人机共用浏览器，Agent 操作时界�
   2 份附件 → 改一个字段回到 pending_review；控制台零报错
 · 线上导出的资料库再次喂给真实 CLI → 同样 imported:true（5 分类 / 2 附件）。踩到的坑：Agent 拿到的返回是
   {ok, json} 信封，落盘必须写 .json 字段本身，整个信封存文件会让 CLI 报 missing field name
+· 自我介绍的可核查项 → 公开仓库数按 GitHub API 实为 201；「第一个作为完整网站上线」按 .qoder.site
+  描述符扫描确认（本地 21 个仓库里只有本仓库有）；src/lib/ 七个模块逐个对照实际文件
 
 5）发现并修掉五个真实缺陷（都是边跑边查出来的，不是我们提的）
 · app.tab.vault 匹配到 2 个元素：响应式布局里侧边导航和窄屏导航共用了同一路径，Agent 定位会失败。

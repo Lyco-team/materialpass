@@ -70,7 +70,7 @@ pnpm dev       # 本地开发
 pnpm build     # 类型检查 + 生产构建 → dist/
 ```
 
-栈：React 19 + Vite 6 + Tailwind v4（lilyco 官方 `lilyco-template/web` 底座，shadcn oklch 令牌）。
+栈：React 19 + Vite 6 + Tailwind v4（shadcn oklch 令牌，八份现成 `@/components/ui` 原语）。
 
 ```
 src/lib/
@@ -134,8 +134,8 @@ Agent 直接调 `export_vault_lweb2cli` 拿到的是信封 `{ ok, json }`，**�
 ## Qoder 开发过程
 
 **交给 Qoder 的**：需求预研（含"大赛真正要求的是 Qoder Sites 公开链接 + 天池作品帖，而不是 GitHub"这一纠正、
-以及发现 `lilyco-web2cli` 已实现填报引擎、于是改为资料库格式逐字段互通而不是重写）；技术栈对齐官方
-`lilyco-template/web`；`src/lib/` 数据层与 `lilyco-native-web/1` 协议桥；六个页面的 UI；
+以及发现 `lilyco-web2cli` 已实现填报引擎、于是改为资料库格式逐字段互通而不是重写）；技术栈直接落在现成的
+React 19 / Vite 6 / Tailwind v4 / shadcn 底座上；`src/lib/` 数据层与 `lilyco-native-web/1` 协议桥；六个页面的 UI；
 用本机 ego-lite 浏览器跑完整端到端流程并截图。
 
 **Qoder 自己发现并修掉的缺陷**（都是实跑出来的，不是事先想到的）：
