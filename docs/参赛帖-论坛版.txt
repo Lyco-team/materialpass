@@ -12,6 +12,8 @@
  发帖入口的实测细节：论坛右上角「发布内容」是 **hover 触发**的 antd 下拉（要用真实 mousemove 停顿才会展开，直接 click 容器中心无效），展开后是「新建Notebook / 新建文章 / 我要提问」三项；
  「新建文章」是一个没有 href 的 <A>，在 signed:false 时点击**零网络请求、无弹窗、无跳转、无 toast**——所以报名确实是发帖的前置，且这个拦截发生在前端。要试就先确认 signed:true，别在未报名状态下反复点。
  浏览器本身的坑：ego-lite 标签页在后台时 document.hidden=true，antd 弹窗会挂载成 display:none、所有 getBoundingClientRect() 都是 0×0，看着像渲染进程卡死；browser.switchTab(targetId) 切到前台即恢复。
+ 正文可核查性已过一遍（11/23）：lilyco-template/web 在 lilyco 仓库和本机都不存在，属虚构来源，已从正文和 README 删掉；「几十个仓库」按 GitHub API 实为 201；「第一个纯 Web 端作品」被 clings（浏览器 WASM 编译器）和 character-theme-kit（HTML 站）证伪。三处都改成了有扫描/接口口径支撑的说法，且 src/ public/ index.html 零命中，线上产物无需重发。
+ 重新生成粘贴正文用 awk 取第一条分隔线之后的全部内容：awk 'f{print} !f && /^———/{f=1; print}' docs/参赛帖-论坛版.txt > /tmp/mp-post-body.txt。校验口径 179 行 / 【插入图片：】12 处 / 无注释泄漏 / 标题行不重复。注意正文标记是「【插入图片：xx.png — 说明】」全角冒号形式，grep -c '【插入图片】' 恒为 0，别当成丢失。
 
 ———————————————————————————————
 一、自我介绍
