@@ -95,6 +95,11 @@ lweb2cli vault --op import --profile materialpass --file materialpass-vault.json
 待审草稿 → `review --op approve` 人工签字 → `commit-submit --id <draft>` 受控发包。
 网页草稿对齐的是字段命名与 `status` 取值，它记录的是"人签过字"这件事，本身不带目标站点命令规格。
 
+Agent 直接调 `export_vault_lweb2cli` 拿到的是信封 `{ ok, json }`，**落盘写 `.json` 字段本身**；
+把整个信封存成文件，CLI 会报 `missing field \`name\``（我们踩过，所以写在这儿）。
+线上部署版又跑了一遍完整链路：真实文件控件上传 → 刷新后材料仍在 → 一键对齐 295×413 / 9 KB →
+预审 0 错 0 警 → AI 自批被拒 → 未签字导出被拒 → 人类签字后导出 1106 字节 → 改一个字段回到待复核。
+
 ## 截图
 
 以下均为生产构建（`pnpm build` 后的 `dist`）在无头 Chromium 里的实机截图，1440×900。
@@ -117,6 +122,10 @@ lweb2cli vault --op import --profile materialpass --file materialpass-vault.json
 | 线上「上手」页 | 线上「Agent 通道」页（右下角是 Qoder Sites 徽标） |
 | --- | --- |
 | ![live guide](docs/screenshots/09-live-guide.png) | ![live agent](docs/screenshots/10-live-agent.png) |
+
+| 线上资料库（真实上传 + 对齐后的持久化状态） | 线上人类签字弹窗 |
+| --- | --- |
+| ![live vault](docs/screenshots/11-live-vault.png) | ![live sign](docs/screenshots/12-live-sign.png) |
 
 处理前后那一组是真实结果：600×900 的 PNG 原图，按「一寸证件照」规格居中裁切后缩放到 295×413、
 转 JPEG、70 KB → 9 KB；「一键对齐」与页面右侧的实时预览共用同一份 `specTransform()`，所以预览即结果。

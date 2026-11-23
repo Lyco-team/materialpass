@@ -50,3 +50,18 @@ lweb2cli commit-submit --id <draft_id>
 实测记录（2026-11-22，本机 debug 构建）：网页「导出 lweb2cli 互通资料库」得到的 JSON，
 交给 `lweb2cli vault --op import --profile materialpass --file materialpass-vault.json`，
 返回 `{"imported":true,"profile":"materialpass","categories":["company","contact","finance","legal_rep","personal"],"attachments_count":2}`。
+
+Agent 侧注意一个我们真踩过的坑：`export_vault_lweb2cli` / `export_draft` 的返回是信封
+`{ ok: true, json: "<…JSON 字符串>" }`，**落盘要写 `.json` 字段本身**，把整个信封存成文件
+会让 CLI 报 `missing field \`name\``：
+
+```js
+const r = await mp.invoke("export_vault_lweb2cli");
+await writeFile("materialpass-vault.json", r.json); // 不是 r
+```
+
+线上部署后同一件事又验了一遍（2026-11-23，公开域名 `materialpass-r96hu96ehfl.qoder.zone`）：
+真实文件控件上传 → 刷新页面材料仍在（IndexedDB 在该 origin 生效）→ 一键对齐 295×413 / 9 KB →
+预审 0 错 0 警 → AI 自批被拒 → 未签字导出被拒 → 人类在弹窗里勾选签字 → `approved`、导出 1106 字节、
+2 份附件 → 签字后改一个字段立刻回到 `pending_review` 且再次导出被拒；该线上导出的资料库喂给真实
+`lweb2cli` 同样返回 `imported:true`。全程控制台零报错。

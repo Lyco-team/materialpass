@@ -39,7 +39,7 @@
     { "name": "approve", "writes": true, "params": { "id": "draft id", "note": "string", "byHuman": "必须为 true" }, "needsHuman": true },
     { "name": "reject", "writes": true, "params": { "id": "draft id", "note": "string" } },
     { "name": "export_draft", "writes": false, "params": { "id": "draft id" }, "note": "仅 approved 草稿可导出" },
-    { "name": "export_vault_lweb2cli", "writes": false, "params": {}, "returns": "lilyco-web2cli VaultProfile JSON" },
+    { "name": "export_vault_lweb2cli", "writes": false, "params": {}, "returns": "{ ok, json }，json 即 VaultProfile 的 JSON 字符串；落盘取 .json 再交给 lweb2cli" },
     { "name": "list_specs", "writes": false, "params": {}, "returns": "可用规格清单" }
   ],
   "specs": [
@@ -70,7 +70,7 @@
     "settings.vault.<export|import|password>": "保管箱加密备份"
   },
   "interop": {
-    "lilyco-web2cli": "export_vault_lweb2cli 的输出与 lweb2cli 的 VaultProfile 逐字段一致，可直接 lweb2cli vault --op import --profile <名> --file <json>；网页草稿与 SubmissionDraft 对齐字段命名与 status 取值（pending_review|approved|rejected|submitted），带 command 的填报草稿由 lweb2cli prepare-submit 生成",
+    "lilyco-web2cli": "export_vault_lweb2cli 返回 { ok, json }，其中 json 字段就是与 lweb2cli VaultProfile 逐字段一致的 JSON 字符串：把 .json 落盘后可直接 lweb2cli vault --op import --profile <名> --file <json>（整个信封落盘会报 missing field `name`）；网页草稿与 SubmissionDraft 对齐字段命名与 status 取值（pending_review|approved|rejected|submitted），带 command 的填报草稿由 lweb2cli prepare-submit 生成",
     "reason": "网页负责人类看得懂、AI 改得动；真正跨站点填报由 lweb2cli 的 CDP + wizard + HumanReviewGate 执行，两边不重复造轮子"
   }
 }

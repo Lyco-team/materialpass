@@ -73,6 +73,8 @@ PBKDF2 + AES-GCM 加密，密码不离开本机。零遥测、零第三方请求
 【插入图片：08-settings.png — 设置：AI 预审与加密备份】
 【插入图片：09-live-guide.png — 线上公开域名实拍的「上手」页】
 【插入图片：10-live-agent.png — 线上「Agent 通道」页，右下角是 Qoder Sites 自带徽标】
+【插入图片：11-live-vault.png — 线上资料库：真实上传并对齐后的持久化状态】
+【插入图片：12-live-sign.png — 线上人类签字弹窗，闸门在部署版上同样生效】
 
 以上截图均为生产构建（pnpm build 后的 dist）在无头 Chromium 里的实机截图，1440×900。
 画面中的姓名、身份证号、材料图片都是脚本生成的虚构示例数据，不是任何真实个人信息。
@@ -119,6 +121,11 @@ Qoder 用本机 ego-lite 浏览器（人机共用浏览器，Agent 操作时界�
 · 网页导出的资料库能否被真实 lweb2cli 二进制导入 → vault --op import 返回 imported:true，5 个分类、2 份附件全部落库
 · 线上站点（Qoder Sites 公开域名）匿名访问 → 首页与 /manifest.json 都是 200；浏览器里桥挂载、14 个动作、
   ambiguous() 仍是 {}、无横向溢出
+· 线上部署版跑完整五步（不是本地构建）→ 真实文件控件上传 → 刷新页面材料仍在（IndexedDB 在该 origin 生效）
+  → 一键对齐 295×413 / 9KB → 预审 0 错 0 警 → AI 自批被拒 → 未签字导出被拒 → 人类签字后导出 1106 字节 /
+  2 份附件 → 改一个字段回到 pending_review；控制台零报错
+· 线上导出的资料库再次喂给真实 CLI → 同样 imported:true（5 分类 / 2 附件）。踩到的坑：Agent 拿到的返回是
+  {ok, json} 信封，落盘必须写 .json 字段本身，整个信封存文件会让 CLI 报 missing field name
 
 5）发现并修掉五个真实缺陷（都是边跑边查出来的，不是我们提的）
 · app.tab.vault 匹配到 2 个元素：响应式布局里侧边导航和窄屏导航共用了同一路径，Agent 定位会失败。
