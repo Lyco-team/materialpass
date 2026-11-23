@@ -44,6 +44,7 @@ mp.invoke("create_draft", { base_url: "https://…" });   // 生成待审草稿
 mp.invoke("approve", { id: "draft-x", note: "已核对", byHuman: true });
 mp.invoke("export_vault_lweb2cli");                      // 交给 lweb2cli 复放填报
 mp.paths();                                              // 当前所有语义路径
+mp.ambiguous();                                          // 歧义自检，正常为 {}（桥方法，不走 invoke）
 ```
 
 机器可读契约在 [`public/manifest.json`](public/manifest.json)：动作、参数、是否写入、是否需要人类、语义路径命名规范全在里面。详见 [`docs/AI-NATIVE.md`](docs/AI-NATIVE.md)。
@@ -140,7 +141,7 @@ Agent 直接调 `export_vault_lweb2cli` 拿到的是信封 `{ ok, json }`，**�
 **Qoder 自己发现并修掉的缺陷**（都是实跑出来的，不是事先想到的）：
 
 1. `app.tab.vault` 命中 2 个元素——响应式侧栏与窄屏导航共用了同一路径，Agent 会定位失败。
-   改为窄屏独立命名空间 `app.tabbar.*`，并新增 `ambiguous()` 自检动作，让页面自己报告歧义地址。
+   改为窄屏独立命名空间 `app.tabbar.*`，并新增 `ambiguous()` 自检方法（与 `paths()` 同为桥方法，不走 `invoke`），让页面自己报告歧义地址。
 2. 缩放日志把「从 → 到」打成同样的数值（先赋值再拼字符串）。
 3. 材料处理页的「处理后（实时预览）」没有带上目标规格的像素尺寸，导致预览显示 600×900 而
    一键对齐实际产出 295×413——预览与结果不一致。抽出 `specTransform()` 供 store 与页面共用后修复。

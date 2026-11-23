@@ -17,6 +17,7 @@
     "invoke": "await window.__materialpass.invoke(action, params) -> Promise<Result>",
     "actions": "window.__materialpass.actions",
     "paths": "window.__materialpass.paths() -> string[]",
+    "ambiguous": "window.__materialpass.ambiguous() -> Record<path,count>，语义路径歧义自检，正常为 {}（与 paths 同为桥方法，不走 invoke）",
     "domSelector": "[data-mp-path]",
     "ready": "document 上的 materialpass:ready 事件"
   },
