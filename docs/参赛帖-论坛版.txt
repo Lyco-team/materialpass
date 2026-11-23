@@ -131,6 +131,8 @@ Qoder 用本机 ego-lite 浏览器（人机共用浏览器，Agent 操作时界�
 · 生产构建启动是否有控制台/网络报错 → 零报错零警告，零第三方请求
 · 线上托管 origin 是否真的零第三方请求 → 按 DevTools 口径实测：5 个资源全部同源，DOM 里零外链、零 iframe；
   宿主注入的 Qoder 徽标是 56 KB 内联脚本，自身也不发请求
+· 线上跑的是不是仓库里这份代码 → 重新 pnpm build 后比对内容哈希：本地与线上引用的都是
+  assets/index-nPLqHSyW.js / assets/index-W1NmTPOD.css，完全一致；tsc --noEmit 严格模式零错误，构建 413.64 kB / gzip 127.63 kB
 · 网页导出的资料库能否被真实 lweb2cli 二进制导入 → vault --op import 返回 imported:true，5 个分类、2 份附件全部落库
 · 线上站点（Qoder Sites 公开域名）匿名访问 → 首页与 /manifest.json 都是 200；浏览器里桥挂载、14 个动作、
   ambiguous() 六个页面都是 {}、无横向溢出
