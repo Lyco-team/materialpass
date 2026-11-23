@@ -2,7 +2,8 @@
 
 > **谁在什么场景下用**：去窗口办业务的人（尤其是不会折腾手机的长辈）——把身份证、证件照、证明、合同这些材料集中**保管**起来，一键处理成系统要求的规格，**AI 先预审一遍，人类再签字提交**。
 
-线上地址：<https://github.com/lilyco-42/materialpass> 部署后填入 Qoder Sites 链接
+**线上体验（Qoder Sites 部署，公开可访问、无需登录）**：<https://materialpass-r96hu96ehfl.qoder.zone>
+源码仓库：<https://github.com/lilyco-42/materialpass>
 
 纯前端 SPA，无后端、无账号、无遥测。材料不出本机：图片在浏览器 Canvas 里处理，原件存 IndexedDB，备份导出必须 AES-GCM 加密。
 
@@ -110,6 +111,12 @@ lweb2cli vault --op import --profile materialpass --file materialpass-vault.json
 | Agent 通道 | 设置 |
 | --- | --- |
 | ![agent](docs/screenshots/07-agent.png) | ![settings](docs/screenshots/08-settings.png) |
+
+线上部署（同一个 `dist`，Qoder Sites 域名，匿名访问）实拍：
+
+| 线上「上手」页 | 线上「Agent 通道」页（右下角是 Qoder Sites 徽标） |
+| --- | --- |
+| ![live guide](docs/screenshots/09-live-guide.png) | ![live agent](docs/screenshots/10-live-agent.png) |
 
 处理前后那一组是真实结果：600×900 的 PNG 原图，按「一寸证件照」规格居中裁切后缩放到 295×413、
 转 JPEG、70 KB → 9 KB；「一键对齐」与页面右侧的实时预览共用同一份 `specTransform()`，所以预览即结果。
