@@ -14,6 +14,8 @@
  浏览器本身的坑：ego-lite 标签页在后台时 document.hidden=true，antd 弹窗会挂载成 display:none、所有 getBoundingClientRect() 都是 0×0，看着像渲染进程卡死；browser.switchTab(targetId) 切到前台即恢复。
  正文可核查性已过一遍（11/23）：lilyco-template/web 在 lilyco 仓库和本机都不存在，属虚构来源，已从正文和 README 删掉；「几十个仓库」按 GitHub API 实为 201；「第一个纯 Web 端作品」被 clings（浏览器 WASM 编译器）和 character-theme-kit（HTML 站）证伪。三处都改成了有扫描/接口口径支撑的说法，且 src/ public/ index.html 零命中，线上产物无需重发。
  重新生成粘贴正文用 awk 取第一条分隔线之后的全部内容：awk 'f{print} !f && /^———/{f=1; print}' docs/参赛帖-论坛版.txt > /tmp/mp-post-body.txt。校验口径 179 行 / 【插入图片：】12 处 / 无注释泄漏 / 标题行不重复。注意正文标记是「【插入图片：xx.png — 说明】」全角冒号形式，grep -c '【插入图片】' 恒为 0，别当成丢失。
+ 11/25 复核：天池登录态已丢（getSession 返回 data:{}，signed:null，cookie 还在但会话失效）。线上域名是 materialpass-r96hu96ehfl.qoder.zone（不是 .qoder.site）；线上 index-nPLqHSyW.js 与本地 dist 的 sha256 逐字节相同（9a659fb2…）。报名截止以接口为准 signupEndTime=2026-11-30 18:00:00。
+ ego-browser 的坑：跑法是 ego-browser nodejs <<'EOF'；任务空间的选择只在单次 Bash 调用内有效，每个脚本开头都要重新 taskSpaces.useOrCreate(name)，跨进程复用 targetId 必然报 no active tab；要人工登录就 taskSpaces.handOff(id) → 用户操作 → taskSpaces.takeOver(id)。完整指南在 ~/code/ego-lite-linux/skills/ego-browser/SKILL.md（本机 ego-browser skill 只打印存根）。
 
 ———————————————————————————————
 一、自我介绍
